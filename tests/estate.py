@@ -40,7 +40,7 @@ def domains_and_bindings() -> tuple[list[dict], dict[str, list[dict]]]:
     for d, subs in layout.items():
         business = d.split("-")[0]
         for stage, project, ds in subs:
-            sub = f"{business}-{stage}"  # VERIFY IN BUILD: subdomain IDs (contracts §2)
+            sub = f"{business}-{stage}"  # VERIFY IN BUILD (estate): subdomain IDs (contracts §2)
             domains.append(dom(sub, d))
             bindings[f"projects/{HUB}/locations/{LOC}/dataDomains/{sub}"] = [
                 {

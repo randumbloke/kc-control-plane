@@ -53,6 +53,8 @@ class Settings:
     scheduler_time_zone: str = "Australia/Sydney"
     evaluator_modules: list[str] = field(default_factory=lambda: ["c12", "c14"])
     lineage_max_hops: int = 20
+    # 48 h outer bound for C14 PENDING (design §5.4.1). VERIFY IN BUILD (VA-22): lineage is
+    # available within 24 hours; VA-64: it usually appears within minutes.
     pending_window_hours: int = 48
 
     @property

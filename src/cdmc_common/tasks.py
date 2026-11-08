@@ -43,8 +43,10 @@ class CloudTasksRollupQueue:
         handler_url: str,
         invoker_sa: str,
         window_seconds: int,
+        audience: str = "",
     ):
         self._t = transport
+        self._audience = audience or service_audience(handler_url)
         self._queue = queue
         self._url = handler_url
         self._sa = invoker_sa

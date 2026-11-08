@@ -1,0 +1,80 @@
+# kc-control-plane image build (design §6.10). Run by the `kc-control-plane-image` trigger
+# after the merge gate, on every merge to main, as the trigger's service account
+# (`tf-governance-nonprod`; `tf-deployer` when single_deployer is true, §6.7.2).
+# The trigger itself is created by dda-platform bootstrap; this file is its build config.
+#
+# Builds the two evaluator images, pushes them to Artifact Registry (immutable tags = commit
+# SHA), and publishes the digests:
+#   gs://${_STATE_BUCKET}/outputs/kc-control-plane/images.json   (schemas/images.schema.json)
+#   gs://${_STATE_BUCKET}/promotions/kc-control-plane/image/${COMMIT_SHA}.json  (marker)
+# cdmc-governance copies the digests into envs/images.json by pull request (§6.10).
+substitutions:
+  _REGISTRY: australia-southeast1-docker.pkg.dev/pltfrm-ngnrng/dda-control-plane
+  _STATE_BUCKET: tfstate-pltfrm-ngnrng
+  _UV_IMAGE: ghcr.io/astral-sh/uv:0.12.16-python3.13-bookworm-slim
+options:
+  logging: CLOUD_LOGGING_ONLY
+  dynamicSubstitutions: true
+steps:
+  - id: checks
+    name: ${_UV_IMAGE}
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        uv sync --frozen
+        uv run ruff check .
+        uv run ruff format --check .
+        uv run pytest
+        uv run kc-validate schemas
+
+  - id: build-service
+    name: gcr.io/cloud-builders/docker
+    waitFor: [checks]
+    args: [build, -f, build/Dockerfile, --target, service,
+           -t, "${_REGISTRY}/evaluator:${COMMIT_SHA}", .]
+
+  - id: build-job
+    name: gcr.io/cloud-builders/docker
+    waitFor: [checks]
+    args: [build, -f, build/Dockerfile, --target, job,
+           -t, "${_REGISTRY}/evaluator-sweep:${COMMIT_SHA}", .]
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-service, build-job]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        for image in evaluator evaluator-sweep; do
+          docker push "${_REGISTRY}/$${image}:${COMMIT_SHA}"
+          docker inspect --format='{{index .RepoDigests 0}}' "${_REGISTRY}/$${image}:${COMMIT_SHA}" \
+            | sed 's/.*@//' > "/workspace/$${image}.digest"
+        done
+
+  - id: images-json
+    name: ${_UV_IMAGE}
+    waitFor: [push]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        uv run python build/write_images_json.py \
+          --registry "${_REGISTRY}" --commit "${COMMIT_SHA}" \
+          --digest evaluator="$$(cat /workspace/evaluator.digest)" \
+          --digest evaluator-sweep="$$(cat /workspace/evaluator-sweep.digest)" \
+          --out /workspace/images.json
+        uv run kc-validate file /workspace/images.json --schema images
+
+  - id: publish
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [images-json]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        gcloud storage cp /workspace/images.json \
+          "gs://${_STATE_BUCKET}/outputs/kc-control-plane/images.json"
+        gcloud storage cp /workspace/images.json \
+          "gs://${_STATE_BUCKET}/promotions/kc-control-plane/image/${COMMIT_SHA}.json"

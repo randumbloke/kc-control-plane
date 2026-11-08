@@ -1,0 +1,37 @@
+# ci-checks for kc-control-plane (design §6.3): lint, format, tests, schema check.
+# Required by the merge gate on pull requests to main (§6.5.1).
+name: ci-checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  ci-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.16"
+      - run: uv sync --frozen
+      - name: ruff
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: pytest
+        run: uv run pytest
+      - name: schema check
+        run: |
+          uv run kc-validate schemas
+          for f in tests/fixtures/schemas/*.valid.json; do
+            name=$(basename "$f" .valid.json)
+            uv run kc-validate file "$f" --schema "$name"
+          done
+          uv run kc-validate repo tests/fixtures/repos/dda-customer
+      - name: Dockerfile builds
+        run: |
+          docker build -f build/Dockerfile --target service -t evaluator:ci .
+          docker build -f build/Dockerfile --target job -t evaluator-sweep:ci .

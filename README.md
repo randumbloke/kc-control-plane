@@ -108,6 +108,10 @@ deploys by digest from its `envs/images.json`. This repository holds no Terrafor
 - **Manifest trust in the sweep.** The uploader check runs on the upload event; the sweep reads
   the current manifest object without re-checking its uploader (managed-folder IAM is the first
   control).
+- **Findings encoding.** Messages are plain JSON with `evaluation.detail` as a JSON string, which
+  suits a BigQuery subscription using the table schema. If the `findings` topic gets an Avro
+  schema with nullable unions, JSON encoding needs union-wrapped values (`{"double": 95.0}`);
+  `Finding.to_message` is the one place to change (VA-61).
 - **Product assets** come from the published product file (uploader-checked), not from
   `dataProducts.dataAssets.list`.
 

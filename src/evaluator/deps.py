@@ -87,7 +87,12 @@ def build_deps(settings: Settings | None = None) -> Deps:
         bigquery=RestBigQueryClient(t, s.hub_project_id, s.region),
         scans=RestScanClient(t, s.region),
         queue=CloudTasksRollupQueue(
-            t, s.rollup_queue, s.rollup_handler_url, s.rollup_invoker_sa, s.rollup_window_seconds
+            t,
+            s.rollup_queue,
+            s.rollup_handler_url,
+            s.rollup_invoker_sa,
+            s.rollup_window_seconds,
+            s.rollup_audience,
         ),
         publisher=PubSubFindingsPublisher(t, s.findings_topic),
     )

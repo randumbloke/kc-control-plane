@@ -148,7 +148,9 @@ def test_cloud_tasks_debounce_on_409():
     assert q.enqueue("dev/customer-dev/customer-profile", now) is None
     task = s.calls[0][2]["json"]["task"]
     assert task["scheduleTime"] == "2026-11-09T00:05:01Z"
-    assert task["httpRequest"]["oidcToken"]["audience"] == "https://svc/tasks/rollup"
+    assert task["httpRequest"]["url"] == "https://svc/tasks/rollup"
+    # Cloud Run accepts the service base URL as audience, not the full path.
+    assert task["httpRequest"]["oidcToken"]["audience"] == "https://svc"
 
 
 def test_transport_retries_then_raises():

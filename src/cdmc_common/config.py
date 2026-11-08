@@ -41,6 +41,7 @@ class Settings:
     )
     rollup_handler_url: str = ""
     rollup_invoker_sa: str = ""
+    rollup_audience: str = ""  # optional; default is the base URL of ROLLUP_HANDLER_URL
     rollup_window_seconds: int = 300
     data_projects: list[str] = field(
         default_factory=lambda: [
@@ -88,6 +89,7 @@ class Settings:
             ),
             rollup_handler_url=e.get("ROLLUP_HANDLER_URL", ""),
             rollup_invoker_sa=e.get("ROLLUP_INVOKER_SA", ""),
+            rollup_audience=e.get("ROLLUP_AUDIENCE", ""),
             rollup_window_seconds=int(e.get("ROLLUP_WINDOW_SECONDS", "300")),
             data_projects=_list(e.get("DATA_PROJECTS"), d.data_projects),
             single_deployer=_bool(e.get("SINGLE_DEPLOYER"), d.single_deployer),

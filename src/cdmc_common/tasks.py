@@ -7,10 +7,17 @@ import json
 import re
 from datetime import UTC, datetime, timedelta
 from typing import Protocol
+from urllib.parse import urlsplit
 
 from cdmc_common.transport import ApiError, Transport
 
 TASKS = "https://cloudtasks.googleapis.com/v2"
+
+
+def service_audience(handler_url: str) -> str:
+    """OIDC audience for Cloud Run: the service base URL, without the path."""
+    parts = urlsplit(handler_url)
+    return f"{parts.scheme}://{parts.netloc}"
 
 
 def rollup_task_id(product_key: str, now: datetime, window_seconds: int) -> tuple[str, datetime]:
@@ -55,7 +62,7 @@ class CloudTasksRollupQueue:
                 "url": self._url,
                 "headers": {"Content-Type": "application/json"},
                 "body": base64.b64encode(json.dumps({"product": product_key}).encode()).decode(),
-                "oidcToken": {"serviceAccountEmail": self._sa, "audience": self._url},
+                "oidcToken": {"serviceAccountEmail": self._sa, "audience": self._audience},
             },
         }
         try:

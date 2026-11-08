@@ -69,7 +69,8 @@ no placeholder other than `{env}` remains.
 
 Environment variables (defaults are the phase 1 estate): `DDA_ENV`, `HUB_PROJECT_ID`, `REGION`,
 `CICD_PROJECT_ID`, `HUB_STATE_BUCKET`, `FINDINGS_TOPIC`, `DQ_RESULTS_TABLE`, `ROLLUP_QUEUE`,
-`ROLLUP_HANDLER_URL`, `ROLLUP_INVOKER_SA`, `ROLLUP_WINDOW_SECONDS`, `DATA_PROJECTS`,
+`ROLLUP_HANDLER_URL`, `ROLLUP_INVOKER_SA`, `ROLLUP_AUDIENCE` (optional; default the base URL of
+`ROLLUP_HANDLER_URL`, as Cloud Run requires), `ROLLUP_WINDOW_SECONDS`, `DATA_PROJECTS`,
 `SINGLE_DEPLOYER`, `SCHEDULER_TIME_ZONE`, `EVALUATOR_MODULES` (`c12,c14`). Both run as
 `evaluator-<env>`; credentials come from the metadata server.
 

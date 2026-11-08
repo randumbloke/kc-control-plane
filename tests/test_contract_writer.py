@@ -22,7 +22,9 @@ def upload(uploader=estate.DEPLOYER, path=PATH):
 
 
 def deps_with(data, settings=None):
-    d = make_deps(NOW, store=FakeStore({PATH: data}), **({"settings": settings} if settings else {}))
+    d = make_deps(
+        NOW, store=FakeStore({PATH: data}), **({"settings": settings} if settings else {})
+    )
     # The entry already holds other aspects the writer must not touch or merge with.
     d.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY] = {
         "aspects": {KEY: {"data": {"aggregate_dq_threshold": 50.0, "steward": "old@x.com"}}}
@@ -34,7 +36,7 @@ def test_writes_whole_aspect_and_enqueues_rollup():
     deps = deps_with(estate.published_customer_profile())
     res = ContractWriter(deps).handle(upload())
     assert res.written
-    (entry, key, data), = deps.catalog.writes
+    ((entry, key, data),) = deps.catalog.writes
     assert entry == estate.CUSTOMER_PROFILE_ENTRY and key == KEY
     assert data == {
         "aggregate_dq_threshold": 95.0,
@@ -53,16 +55,20 @@ def test_writes_whole_aspect_and_enqueues_rollup():
 def test_changed_threshold_replaces_previous_value():
     deps = deps_with(estate.published_customer_profile(aggregate_dq_threshold=99.5))
     ContractWriter(deps).handle(upload())
-    assert deps.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY]["aspects"][KEY]["data"][
-        "aggregate_dq_threshold"
-    ] == 99.5
+    assert (
+        deps.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY]["aspects"][KEY]["data"][
+            "aggregate_dq_threshold"
+        ]
+        == 99.5
+    )
 
 
 def test_domain_pipeline_accepted_when_not_single_deployer():
     s = dataclasses.replace(Settings(), single_deployer=False)
     deps = deps_with(estate.published_customer_profile(), s)
     ok = ContractWriter(deps).handle(
-        upload("tf-customer-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com"))
+        upload("tf-customer-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com")
+    )
     assert ok.written
 
 
@@ -76,7 +82,8 @@ def test_tf_deployer_rejected_when_not_single_deployer():
 def test_uploader_check_rejects_other_identity():
     deps = deps_with(estate.published_customer_profile())
     res = ContractWriter(deps).handle(
-        upload("tf-accounts-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com"))
+        upload("tf-accounts-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com")
+    )
     assert not res.written
     assert deps.catalog.writes == [] and deps.queue.tasks == []
     (f,) = deps.publisher.findings

@@ -1,0 +1,29 @@
+{
+  "env": "dev",
+  "domains": {
+    "customer-dev": {
+      "name": "projects/kcdda-dgov-hub-nonprod/locations/australia-southeast1/dataDomains/customer-dev",
+      "policy_member": "principal://dataplex.googleapis.com/x",
+      "contacts": [
+        {
+          "role": "owner",
+          "identity": "dda-customer-dev-owners@mikegyoung.joonix.net"
+        }
+      ],
+      "iam": {
+        "roles/dataplex.dataDomainViewer": [
+          "group:dda-customer-dev-stewards@mikegyoung.joonix.net"
+        ]
+      },
+      "subdomains": {
+        "curated": {
+          "name": "n",
+          "policy_member": "p"
+        }
+      },
+      "allowed_principals": [
+        "serviceAccount:customer-ingest-dev@kcdda-customer-analytics-dev.iam.gserviceaccount.com"
+      ]
+    }
+  }
+}

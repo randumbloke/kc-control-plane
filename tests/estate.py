@@ -26,11 +26,16 @@ def domains_and_bindings() -> tuple[list[dict], dict[str, list[dict]]]:
     domains = [dom("customer-dev"), dom("accounts-dev")]
     bindings: dict[str, list[dict]] = {}
     layout = {
-        "customer-dev": [("raw", CORE, "customer_raw"), ("curated", CORE, "customer_curated"),
-                         ("analytics", CUST_AN, "customer_analytics")],
-        "accounts-dev": [("staging", CORE, "accounts_staging"),
-                         ("curated", CORE, "accounts_curated"),
-                         ("analytics", ACCT_AN, "accounts_analytics")],
+        "customer-dev": [
+            ("raw", CORE, "customer_raw"),
+            ("curated", CORE, "customer_curated"),
+            ("analytics", CUST_AN, "customer_analytics"),
+        ],
+        "accounts-dev": [
+            ("staging", CORE, "accounts_staging"),
+            ("curated", CORE, "accounts_curated"),
+            ("analytics", ACCT_AN, "accounts_analytics"),
+        ],
     }
     for d, subs in layout.items():
         business = d.split("-")[0]
@@ -38,8 +43,10 @@ def domains_and_bindings() -> tuple[list[dict], dict[str, list[dict]]]:
             sub = f"{business}-{stage}"  # VERIFY IN BUILD: subdomain IDs (contracts §2)
             domains.append(dom(sub, d))
             bindings[f"projects/{HUB}/locations/{LOC}/dataDomains/{sub}"] = [
-                {"name": f"b-{ds}",
-                 "resource": f"//bigquery.googleapis.com/projects/{project}/datasets/{ds}"}
+                {
+                    "name": f"b-{ds}",
+                    "resource": f"//bigquery.googleapis.com/projects/{project}/datasets/{ds}",
+                }
             ]
     return domains, bindings
 
@@ -61,7 +68,11 @@ def published_customer_profile(**overrides) -> dict:
                 "form": "pipeline_table",
             }
         },
-        "refresh_cadence": {"frequency": "Daily", "refresh_time": "06:00", "threshold_minutes": 120},
+        "refresh_cadence": {
+            "frequency": "Daily",
+            "refresh_time": "06:00",
+            "threshold_minutes": 120,
+        },
         "published_at": "2026-11-09T00:00:00Z",
         "commit": "abc123",
     }

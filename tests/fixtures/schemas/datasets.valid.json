@@ -1,0 +1,22 @@
+{
+  "datasets": {
+    "customer_raw": {
+      "stage": "raw",
+      "sensitivity": "sensitive"
+    },
+    "customer_curated": {
+      "stage": "curated",
+      "sensitivity": "sensitive"
+    },
+    "customer_analytics": {
+      "stage": "analytics",
+      "sensitivity": "sensitive"
+    }
+  },
+  "table_contacts": {
+    "customer_curated.contacts": {
+      "owner": "dda-customer-dev-owners@mikegyoung.joonix.net",
+      "steward": "dda-customer-dev-stewards@mikegyoung.joonix.net"
+    }
+  }
+}

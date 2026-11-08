@@ -9,6 +9,7 @@ Schema cannot express.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -48,9 +49,29 @@ def _load(path: Path) -> Any:
     return json.loads(text) if path.suffix == ".json" else yaml.safe_load(text)
 
 
+_PLACEHOLDER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
+
+
+def placeholders(value: Any, path: str = "") -> list[str]:
+    """Placeholders left after `{env}` substitution (only `{env}` is defined, §3.1)."""
+    if isinstance(value, str):
+        return [f"{path or '(root)'}: unknown placeholder {m}" for m in _PLACEHOLDER.findall(value)]
+    items = (
+        value.items()
+        if isinstance(value, dict)
+        else enumerate(value)
+        if isinstance(value, list)
+        else []
+    )
+    out: list[str] = []
+    for k, v in items:
+        out += placeholders(v, f"{path}/{k}" if path else str(k))
+    return out
+
+
 def _schema(report: Report, rel: str, name: str, data: Any) -> bool:
     report.checked.append(rel)
-    errs = schemas.errors(name, data)
+    errs = schemas.errors(name, data) + placeholders(data)
     for e in errs:
         report.add(rel, e)
     return not errs

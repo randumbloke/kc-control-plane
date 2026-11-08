@@ -1,0 +1,9 @@
+{
+  "images": {
+    "evaluator": {
+      "repository": "australia-southeast1-docker.pkg.dev/pltfrm-ngnrng/dda-control-plane/evaluator",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "commit": "abc123"
+    }
+  }
+}

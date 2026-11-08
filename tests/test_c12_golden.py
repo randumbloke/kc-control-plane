@@ -39,7 +39,8 @@ def build(fx: dict):
     if fx.get("contract") is not None:
         aspects_map[f"{HUB}.global.cdmc-data-product-contract"] = {"data": fx["contract"]}
     deps.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY] = {
-        "name": estate.CUSTOMER_PROFILE_ENTRY, "aspects": aspects_map
+        "name": estate.CUSTOMER_PROFILE_ENTRY,
+        "aspects": aspects_map,
     }
     seen_ds = set()
     for t in fx["tables"]:
@@ -53,25 +54,35 @@ def build(fx: dict):
         scan = t["scan"]
         if scan.get("exists"):
             deps.scans.add(
-                t["ref"], publishing=scan.get("publishing", True),
+                t["ref"],
+                publishing=scan.get("publishing", True),
                 export="default" if scan.get("export", True) else None,
             )
         if t.get("job"):
             end = now - timedelta(hours=t["job"]["end_hours_ago"])
             for name, passed, critical in t["job"]["rules"]:
-                deps.bigquery.result_rows.append({
-                    "table_ref": ref.dotted, "job_id": f"{ref.table}-job-latest",
-                    "job_end_time": end.isoformat(), "rule_name": name,
-                    "rule_passed": str(passed).lower(),
-                    "critical": "true" if critical else None,
-                })
+                deps.bigquery.result_rows.append(
+                    {
+                        "table_ref": ref.dotted,
+                        "job_id": f"{ref.table}-job-latest",
+                        "job_end_time": end.isoformat(),
+                        "rule_name": name,
+                        "rule_passed": str(passed).lower(),
+                        "critical": "true" if critical else None,
+                    }
+                )
             # An older job for the same table must be ignored (latest job per table).
             older = now - timedelta(hours=t["job"]["end_hours_ago"] + 24)
-            deps.bigquery.result_rows.append({
-                "table_ref": ref.dotted, "job_id": f"{ref.table}-job-older",
-                "job_end_time": older.isoformat(), "rule_name": "old", "rule_passed": "false",
-                "critical": "true",
-            })
+            deps.bigquery.result_rows.append(
+                {
+                    "table_ref": ref.dotted,
+                    "job_id": f"{ref.table}-job-older",
+                    "job_end_time": older.isoformat(),
+                    "rule_name": "old",
+                    "rule_passed": "false",
+                    "critical": "true",
+                }
+            )
     return deps, PublishedProduct(path, "customer-dev", "customer-profile", product_data)
 
 
@@ -94,7 +105,7 @@ def test_c12_golden(path: Path):
         assert fresh[0].evaluation.detail["control_status"] == exp["freshness"]
         assert fresh[0].evaluation.status == ("PASS" if exp["freshness"] == "ON_TIME" else "FAIL")
 
-    (entry, key, data), = deps.catalog.writes
+    ((entry, key, data),) = deps.catalog.writes
     assert entry == estate.CUSTOMER_PROFILE_ENTRY
     assert key == f"{HUB}.global.{QUALITY_ASPECT}"
     aspects.validate(QUALITY_ASPECT, data)
@@ -118,5 +129,5 @@ def test_rollup_queries_only_product_tables():
     fx = json.loads(GOLDEN[2].read_text())
     deps, product = build(fx)
     C12Module(deps).rollup(product, "EVENT", "t")
-    (_, params), = deps.bigquery.queries
+    ((_, params),) = deps.bigquery.queries
     assert sorted(params["tables"]) == sorted(TableRef.parse(t["ref"]).dotted for t in fx["tables"])

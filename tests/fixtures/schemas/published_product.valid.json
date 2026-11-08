@@ -1,0 +1,24 @@
+{
+  "env": "dev",
+  "domain": "customer-dev",
+  "product_id": "customer-profile",
+  "product_name": "Customer Profile",
+  "dataplex_entry": "projects/kcdda-customer-analytics-dev/locations/australia-southeast1/entryGroups/@dataplex/entries/customer-profile",
+  "steward_group": "dda-customer-dev-stewards@mikegyoung.joonix.net",
+  "owners_group": "dda-dp-customer-profile-dev-owners@mikegyoung.joonix.net",
+  "aggregate_dq_threshold": 95.0,
+  "lifecycle": "published",
+  "assets": {
+    "customer_profile": {
+      "table_resource": "//bigquery.googleapis.com/projects/kcdda-customer-analytics-dev/datasets/customer_analytics/tables/customer_profile",
+      "form": "pipeline_table"
+    }
+  },
+  "refresh_cadence": {
+    "frequency": "Daily",
+    "refresh_time": "06:00",
+    "threshold_minutes": 120
+  },
+  "published_at": "2026-11-09T00:00:00Z",
+  "commit": "abc123"
+}

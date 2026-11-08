@@ -1,0 +1,10 @@
+{
+  "env": "dev",
+  "domain": "customer-dev",
+  "bindings": {
+    "ds-customer-curated": {
+      "domain_name": "projects/kcdda-dgov-hub-nonprod/locations/australia-southeast1/dataDomains/customer-curated",
+      "resource": "//bigquery.googleapis.com/projects/kcdda-core-dwh-dev/datasets/customer_curated"
+    }
+  }
+}

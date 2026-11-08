@@ -29,14 +29,21 @@ def deps():
 
 def push(entry: str, message_id: str = "m1") -> dict:
     payload = {"entry": {"name": entry}, "changeType": "UPDATE"}  # VA-09: shape unverified
-    return {"message": {"data": base64.b64encode(json.dumps(payload).encode()).decode(),
-                        "messageId": message_id}, "subscription": "s"}
+    return {
+        "message": {
+            "data": base64.b64encode(json.dumps(payload).encode()).decode(),
+            "messageId": message_id,
+        },
+        "subscription": "s",
+    }
 
 
 def table_entry(dotted: str) -> str:
     p, ds, t = dotted.split(".")
-    return (f"projects/{p}/locations/{estate.LOC}/entryGroups/@bigquery/entries/"
-            f"bigquery.googleapis.com/projects/{p}/datasets/{ds}/tables/{t}")
+    return (
+        f"projects/{p}/locations/{estate.LOC}/entryGroups/@bigquery/entries/"
+        f"bigquery.googleapis.com/projects/{p}/datasets/{ds}/tables/{t}"
+    )
 
 
 def test_healthz():
@@ -52,14 +59,18 @@ def test_feed_event_evaluates_table_and_enqueues_rollup():
     checks = sorted(f.check for f in d.publisher.findings)
     assert checks == ["C12.coverage", "C14.lineage"]
     assert len(d.queue.tasks) == 1
-    assert any(a.startswith("rollup-enqueued:dev/customer-dev/customer-profile") for a in r.json["actions"])
+    assert any(
+        a.startswith("rollup-enqueued:dev/customer-dev/customer-profile") for a in r.json["actions"]
+    )
 
 
 def test_twenty_table_updates_produce_one_rollup_task():
     d = deps()
     client = create_app(d).test_client()
     for i in range(20):
-        assert client.post("/events/kc", json=push(table_entry(PROFILE), f"m{i}")).status_code == 200
+        assert (
+            client.post("/events/kc", json=push(table_entry(PROFILE), f"m{i}")).status_code == 200
+        )
     assert len(d.queue.tasks) == 1
 
 
@@ -87,25 +98,38 @@ def test_handler_error_returns_500_for_retry():
 
 
 def audit_event(path: str, uploader: str) -> dict:
-    return {"protoPayload": {
-        "methodName": "storage.objects.create",
-        "resourceName": f"projects/_/buckets/{estate.BUCKET}/objects/{path}",
-        "authenticationInfo": {"principalEmail": uploader}}, "insertId": "i1"}
+    return {
+        "protoPayload": {
+            "methodName": "storage.objects.create",
+            "resourceName": f"projects/_/buckets/{estate.BUCKET}/objects/{path}",
+            "authenticationInfo": {"principalEmail": uploader},
+        },
+        "insertId": "i1",
+    }
 
 
 def test_state_event_runs_contract_writer():
     d = deps()
-    r = create_app(d).test_client().post(
-        "/events/state", json=audit_event(PRODUCT_PATH, estate.DEPLOYER),
-        headers={"ce-id": "ce-1"})
+    r = (
+        create_app(d)
+        .test_client()
+        .post(
+            "/events/state",
+            json=audit_event(PRODUCT_PATH, estate.DEPLOYER),
+            headers={"ce-id": "ce-1"},
+        )
+    )
     assert r.status_code == 200 and r.json["actions"] == ["contract:written"]
     assert d.catalog.writes[0][1].endswith("cdmc-data-product-contract")
 
 
 def test_state_event_rejects_wrong_uploader():
     d = deps()
-    r = create_app(d).test_client().post(
-        "/events/state", json=audit_event(PRODUCT_PATH, "mallory@example.com"))
+    r = (
+        create_app(d)
+        .test_client()
+        .post("/events/state", json=audit_event(PRODUCT_PATH, "mallory@example.com"))
+    )
     assert r.status_code == 200 and d.catalog.writes == []
     assert d.publisher.findings[0].check == "C12.contract_source"
 
@@ -113,8 +137,11 @@ def test_state_event_rejects_wrong_uploader():
 def test_manifest_upload_by_wrong_uploader_publishes_finding():
     d = deps()
     path = "lineage/dev/customer-dev/manifest.json"
-    d.store.objects[path] = {"version": 1, "domain": "customer-dev",
-                             "targets": {PROFILE: {"sources": []}}}
+    d.store.objects[path] = {
+        "version": 1,
+        "domain": "customer-dev",
+        "targets": {PROFILE: {"sources": []}},
+    }
     r = create_app(d).test_client().post("/events/state", json=audit_event(path, "x@y.com"))
     assert r.status_code == 200
     (f,) = d.publisher.findings
@@ -124,10 +151,12 @@ def test_manifest_upload_by_wrong_uploader_publishes_finding():
 def test_manifest_upload_reevaluates_targets():
     d = deps()
     path = "lineage/dev/customer-dev/manifest.json"
-    d.store.objects[path] = {"version": 1, "domain": "customer-dev",
-                             "targets": {PROFILE: {"sources": []}}}
-    r = create_app(d).test_client().post(
-        "/events/state", json=audit_event(path, estate.DEPLOYER))
+    d.store.objects[path] = {
+        "version": 1,
+        "domain": "customer-dev",
+        "targets": {PROFILE: {"sources": []}},
+    }
+    r = create_app(d).test_client().post("/events/state", json=audit_event(path, estate.DEPLOYER))
     assert r.status_code == 200
     assert [f.check for f in d.publisher.findings if f.control == "C14"] == ["C14.lineage"]
 
@@ -135,9 +164,15 @@ def test_manifest_upload_reevaluates_targets():
 def test_rollup_task_endpoint():
     d = deps()
     d.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY] = {"aspects": {}}
-    r = create_app(d).test_client().post(
-        "/tasks/rollup", json={"product": "dev/customer-dev/customer-profile"},
-        headers={"X-CloudTasks-TaskName": "rollup-x"})
+    r = (
+        create_app(d)
+        .test_client()
+        .post(
+            "/tasks/rollup",
+            json={"product": "dev/customer-dev/customer-profile"},
+            headers={"X-CloudTasks-TaskName": "rollup-x"},
+        )
+    )
     assert r.status_code == 200
     status = d.publisher.by_check("C12.product_status")[0]
     assert status.evaluation.detail["control_status"] == "NOT_EVALUATED"

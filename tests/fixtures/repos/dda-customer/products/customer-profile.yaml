@@ -1,0 +1,20 @@
+id: customer-profile
+display_name: Customer Profile
+description: One row per active customer, with contact preferences and segment.
+lifecycle: published
+owners_group: dda-dp-customer-profile-{env}-owners@mikegyoung.joonix.net
+steward_group: dda-customer-{env}-stewards@mikegyoung.joonix.net
+approvers:
+  - dda-dp-customer-profile-{env}-owners@mikegyoung.joonix.net
+access_groups:
+  reader:
+    display_name: Reader
+    description: Read access to every asset.
+contract:
+  refresh_cadence: {frequency: Daily, refresh_time: "06:00", threshold_minutes: 120}
+  aggregate_dq_threshold: 95.0
+assets:
+  customer_profile:
+    table: customer_analytics.customer_profile
+    form: pipeline_table
+    access: {reader: roles/bigquery.dataViewer}

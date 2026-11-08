@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "domain": "customer-dev",
+  "generated_by": "hand-written (P6-39)",
+  "targets": {
+    "kcdda-core-dwh-dev.customer_raw.contacts": {
+      "sources": [],
+      "landing_paths": ["gs://kcdda-core-dwh-dev-customer-landing/contacts/"]
+    },
+    "kcdda-core-dwh-dev.customer_curated.contacts": {
+      "sources": ["kcdda-core-dwh-dev.customer_raw.contacts"]
+    },
+    "kcdda-customer-analytics-dev.customer_analytics.customer_profile": {
+      "sources": ["kcdda-core-dwh-dev.customer_curated.contacts"]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+table: customer_curated.contacts
+trigger: {schedule: "CRON_TZ=Australia/Sydney 0 7 * * *"}
+rules:
+  - name: customer-id-not-null
+    dimension: COMPLETENESS
+    template: non_null_expectation
+    column: customer_id
+    critical: true
+  - name: email-valid
+    dimension: VALIDITY
+    template: regex_expectation
+    column: email
+    threshold: 0.99
+    params: {regex: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"}

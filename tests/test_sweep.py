@@ -12,15 +12,20 @@ NOW = datetime(2026, 11, 9, 15, tzinfo=UTC)
 
 
 def deps():
-    d = make_deps(NOW, store=FakeStore({
-        "products/dev/customer-dev/customer-profile.json": estate.published_customer_profile()}))
+    d = make_deps(
+        NOW,
+        store=FakeStore(
+            {"products/dev/customer-dev/customer-profile.json": estate.published_customer_profile()}
+        ),
+    )
     d.bigquery.add_dataset(estate.CORE, "customer_curated", True)
     d.bigquery.add_dataset(estate.CORE, "accounts_curated", False)
     d.bigquery.add_dataset(estate.CUST_AN, "customer_analytics", True)
     d.bigquery.add_table(f"{estate.CORE}.customer_curated.contacts", NOW - timedelta(days=3))
     d.bigquery.add_table(f"{estate.CORE}.accounts_curated.balances", NOW - timedelta(days=3))
-    d.bigquery.add_table(f"{estate.CUST_AN}.customer_analytics.customer_profile",
-                         NOW - timedelta(days=3))
+    d.bigquery.add_table(
+        f"{estate.CUST_AN}.customer_analytics.customer_profile", NOW - timedelta(days=3)
+    )
     d.catalog.entries[estate.CUSTOMER_PROFILE_ENTRY] = {"aspects": {}}
     return d
 

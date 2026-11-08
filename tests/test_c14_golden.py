@@ -24,9 +24,7 @@ def _now(fx: dict) -> datetime:
 def run_fixture(fx: dict):
     now = _now(fx)
     domains, bindings = estate.domains_and_bindings()
-    objects = {
-        f"lineage/dev/{d}/manifest.json": m for d, m in fx.get("manifests", {}).items()
-    }
+    objects = {f"lineage/dev/{d}/manifest.json": m for d, m in fx.get("manifests", {}).items()}
     if fx.get("products"):
         objects["products/dev/customer-dev/customer-profile.json"] = (
             estate.published_customer_profile()
@@ -62,7 +60,7 @@ def test_c14_golden(path: Path):
     assert finding.narrative is None  # D-01: no narrative in phase 1
 
     # Evidence aspect: one whole-aspect write on the table entry, valid against §5.11.4.
-    (entry, key, data), = deps.catalog.writes
+    ((entry, key, data),) = deps.catalog.writes
     assert entry == ref.entry_name("australia-southeast1")
     assert key == "kcdda-dgov-hub-nonprod.global.cdmc-lineage-evidence"
     aspects.validate(ASPECT, data)
@@ -81,9 +79,7 @@ def test_c14_golden(path: Path):
 def test_rule_order_is_fixed():
     from evaluator.c14 import rules
 
-    assert rules.CONTROL_STATUSES == (
-        "PENDING", "INSUFFICIENT_EVIDENCE", "MISMATCH", "VERIFIED"
-    )
+    assert rules.CONTROL_STATUSES == ("PENDING", "INSUFFICIENT_EVIDENCE", "MISMATCH", "VERIFIED")
 
 
 def test_lineage_requested_one_beyond_hop_limit():

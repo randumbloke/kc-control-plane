@@ -24,9 +24,11 @@ NOW = datetime(2026, 11, 9, tzinfo=UTC)
 
 def test_status_mapping_matches_aspect_enums():
     assert set(CONTROL_STATUS_MAP["C12.product_status"]) == set(
-        aspects.enum_values("cdmc-data-product-quality", "aggregate_dq_status"))
+        aspects.enum_values("cdmc-data-product-quality", "aggregate_dq_status")
+    )
     assert set(CONTROL_STATUS_MAP["C12.freshness"]) == set(
-        aspects.enum_values("cdmc-data-product-quality", "freshness_status"))
+        aspects.enum_values("cdmc-data-product-quality", "freshness_status")
+    )
     assert set(CONTROL_STATUS_MAP["C14.lineage"]) == set(c14.CONTROL_STATUSES)
     assert map_status("C12.product_status", "NOT_EVALUATED") == "FAIL"
     assert map_status("C14.lineage", "PENDING") == "PENDING"
@@ -42,9 +44,11 @@ def test_aspect_templates_indexes_and_shared_fields():
 
 
 def test_aspect_validation_rejects_bad_payloads():
-    good = {"aggregate_dq_status": "COMPLIANT",
-            "evaluation": aspects.evaluation_record("v", "2026-11-09T00:00:00Z", "r"),
-            "schema_version": 1}
+    good = {
+        "aggregate_dq_status": "COMPLIANT",
+        "evaluation": aspects.evaluation_record("v", "2026-11-09T00:00:00Z", "r"),
+        "schema_version": 1,
+    }
     aspects.validate("cdmc-data-product-quality", good)
     for bad in (
         {**good, "aggregate_dq_status": "GREEN"},
@@ -58,20 +62,52 @@ def test_aspect_validation_rejects_bad_payloads():
 
 
 def test_finding_message_shape_and_d01_split():
-    f = make_finding(env="dev", control="C14", check="C14.lineage", asset="//x", asset_type="TABLE",
-                     status="PASS", evaluator_version="c14-lineage@1.0.0", trigger="EVENT",
-                     trigger_id="m", source_ref="r", now=NOW, detail={"control_status": "VERIFIED"})
+    f = make_finding(
+        env="dev",
+        control="C14",
+        check="C14.lineage",
+        asset="//x",
+        asset_type="TABLE",
+        status="PASS",
+        evaluator_version="c14-lineage@1.0.0",
+        trigger="EVENT",
+        trigger_id="m",
+        source_ref="r",
+        now=NOW,
+        detail={"control_status": "VERIFIED"},
+    )
     msg = f.to_message()
     assert "narrative" not in msg  # P5-2: narratives go to cdmc_report.narratives
     assert json.loads(msg["evaluation"]["detail"]) == {"control_status": "VERIFIED"}
-    assert set(msg) == {"finding_id", "environment", "control", "check", "asset", "asset_type",
-                        "domain", "product", "detected_at", "evaluation", "route"}
+    assert set(msg) == {
+        "finding_id",
+        "environment",
+        "control",
+        "check",
+        "asset",
+        "asset_type",
+        "domain",
+        "product",
+        "detected_at",
+        "evaluation",
+        "route",
+    }
     rec = f.to_record()
     assert rec["narrative"] is None
     with pytest.raises(ValueError):
-        make_finding(env="dev", control="C14", check="c", asset="a", asset_type="TABLE",
-                     status="GREEN", evaluator_version="v", trigger="EVENT", trigger_id="t",
-                     source_ref="r", now=NOW)
+        make_finding(
+            env="dev",
+            control="C14",
+            check="c",
+            asset="a",
+            asset_type="TABLE",
+            status="GREEN",
+            evaluator_version="v",
+            trigger="EVENT",
+            trigger_id="t",
+            source_ref="r",
+            now=NOW,
+        )
 
 
 def test_table_ref_round_trips():
@@ -84,10 +120,13 @@ def test_table_ref_round_trips():
 
 def test_pipeline_identities():
     ids = domain_pipeline_identities("customer-dev", "pltfrm-ngnrng", True)
-    assert ids == {"tf-customer-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com",
-                   "tf-deployer@pltfrm-ngnrng.iam.gserviceaccount.com"}
+    assert ids == {
+        "tf-customer-nonprod@pltfrm-ngnrng.iam.gserviceaccount.com",
+        "tf-deployer@pltfrm-ngnrng.iam.gserviceaccount.com",
+    }
     assert "tf-deployer@pltfrm-ngnrng.iam.gserviceaccount.com" not in (
-        domain_pipeline_identities("customer-dev", "pltfrm-ngnrng", False))
+        domain_pipeline_identities("customer-dev", "pltfrm-ngnrng", False)
+    )
 
 
 def test_gcs_matching():
@@ -98,8 +137,11 @@ def test_gcs_matching():
 
 
 def test_parse_stream_accepts_array_and_object():
-    link = {"source": {"fullyQualifiedName": "a"}, "target": {"fullyQualifiedName": "b"},
-            "depth": 1}
+    link = {
+        "source": {"fullyQualifiedName": "a"},
+        "target": {"fullyQualifiedName": "b"},
+        "depth": 1,
+    }
     assert len(parse_stream([{"links": [link]}, {"links": [link]}])) == 2
     assert len(parse_stream({"links": [link]})) == 1
     assert parse_stream(None) == []
@@ -116,13 +158,17 @@ def test_domain_index_maps_bound_datasets_to_top_domain():
     domains, bindings = estate.domains_and_bindings()
     idx = resource_domain_index(FakeDomains(domains, bindings))
     assert idx[f"//bigquery.googleapis.com/projects/{estate.CORE}/datasets/customer_curated"] == (
-        "customer-dev")
-    assert idx[f"//bigquery.googleapis.com/projects/{estate.ACCT_AN}/datasets/accounts_analytics"] == (
-        "accounts-dev")
+        "customer-dev"
+    )
+    assert idx[
+        f"//bigquery.googleapis.com/projects/{estate.ACCT_AN}/datasets/accounts_analytics"
+    ] == ("accounts-dev")
 
 
 def test_settings_from_env():
-    s = Settings.from_env({"HUB_PROJECT_ID": "h", "DATA_PROJECTS": "a,b", "SINGLE_DEPLOYER": "false"})
+    s = Settings.from_env(
+        {"HUB_PROJECT_ID": "h", "DATA_PROJECTS": "a,b", "SINGLE_DEPLOYER": "false"}
+    )
     assert s.hub_state_bucket == "h-dda-state" and s.data_projects == ["a", "b"]
     assert not s.single_deployer and s.tier == "nonprod"
     assert s.aspect_key("cdmc-lineage-evidence") == "h.global.cdmc-lineage-evidence"

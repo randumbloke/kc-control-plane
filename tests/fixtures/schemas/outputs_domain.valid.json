@@ -1,0 +1,12 @@
+{
+  "env": "dev",
+  "domain": "customer-dev",
+  "products": {
+    "customer-profile": {
+      "name": "projects/kcdda-customer-analytics-dev/locations/australia-southeast1/dataProducts/customer-profile",
+      "project_id": "kcdda-customer-analytics-dev",
+      "location": "australia-southeast1",
+      "dataplex_entry": "projects/kcdda-customer-analytics-dev/locations/australia-southeast1/entryGroups/@dataplex/entries/customer-profile"
+    }
+  }
+}

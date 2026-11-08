@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/outputs_platform_env.schema.json",
+  "title": "outputs/dda-platform/<env>/outputs.json",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "folders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "projects": {
+      "type": "object",
+      "description": "Key: core | <business> (analytics)",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+          },
+          "number": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "service_agents": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+            }
+          }
+        },
+        "required": [
+          "project_id",
+          "number",
+          "service_agents"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "landing_buckets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "topics": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "metadata_feeds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "domain_service_accounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "ingest": {
+            "type": "string",
+            "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+          },
+          "analytics": {
+            "type": "string",
+            "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+          }
+        },
+        "required": [
+          "ingest",
+          "analytics"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "env",
+    "folders",
+    "projects",
+    "landing_buckets",
+    "topics",
+    "metadata_feeds",
+    "domain_service_accounts"
+  ],
+  "additionalProperties": false
+}

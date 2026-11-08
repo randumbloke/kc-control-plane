@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/domains_state.schema.json",
+  "title": "hub domains/<env>.json (design \u00a72.3.2, \u00a75.4)",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "domains": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "policy_member": {
+            "type": "string"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "identity": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "role",
+                "identity"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "iam": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(user|group|serviceAccount|principal|principalSet):"
+              }
+            }
+          },
+          "subdomains": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "policy_member": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "policy_member"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "allowed_principals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(user|group|serviceAccount|principal|principalSet):"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "policy_member",
+          "contacts",
+          "iam",
+          "subdomains",
+          "allowed_principals"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "env",
+    "domains"
+  ],
+  "additionalProperties": false
+}

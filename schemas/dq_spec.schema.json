@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/dq_spec.schema.json",
+  "title": "Data quality scan specification dq/<dataset>/<table>.yaml (design \u00a73.6)",
+  "type": "object",
+  "properties": {
+    "table": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*_(raw|staging|curated|analytics)\\.[a-z][a-z0-9_]*$"
+    },
+    "trigger": {
+      "oneOf": [
+        {
+          "const": "on_demand"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schedule": {
+              "type": "string",
+              "pattern": "^CRON_TZ=\\S+ "
+            }
+          },
+          "required": [
+            "schedule"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "incremental_field": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "dimension": {
+            "enum": [
+              "COMPLETENESS",
+              "ACCURACY",
+              "CONSISTENCY",
+              "VALIDITY",
+              "UNIQUENESS",
+              "FRESHNESS",
+              "VOLUME"
+            ]
+          },
+          "template": {
+            "enum": [
+              "non_null_expectation",
+              "range_expectation",
+              "regex_expectation",
+              "set_expectation",
+              "uniqueness_expectation",
+              "statistic_range_expectation",
+              "row_condition_expectation",
+              "table_condition_expectation",
+              "sql_assertion"
+            ]
+          },
+          "column": {
+            "type": "string"
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "threshold": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "params": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "name",
+          "dimension",
+          "template"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "table",
+    "trigger",
+    "rules"
+  ],
+  "additionalProperties": false
+}

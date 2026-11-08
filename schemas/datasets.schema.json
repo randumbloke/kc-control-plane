@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/datasets.schema.json",
+  "title": "Domain datasets.yaml (design \u00a73.3)",
+  "type": "object",
+  "properties": {
+    "datasets": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*_(raw|staging|curated|analytics)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "enum": [
+              "raw",
+              "staging",
+              "curated",
+              "analytics"
+            ]
+          },
+          "sensitivity": {
+            "enum": [
+              "sensitive",
+              "non-sensitive"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "sensitivity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "table_contacts": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*_(raw|staging|curated|analytics)\\.[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+          },
+          "steward": {
+            "type": "string",
+            "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "datasets"
+  ],
+  "additionalProperties": false
+}

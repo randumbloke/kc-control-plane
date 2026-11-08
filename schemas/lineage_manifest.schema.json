@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/lineage_manifest.schema.json",
+  "title": "Design-time lineage manifest (design \u00a75.4.1, P6-39)",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+    },
+    "generated_by": {
+      "type": "string"
+    },
+    "targets": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$"
+            }
+          },
+          "landing_paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^gs://"
+            }
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "version",
+    "domain",
+    "targets"
+  ],
+  "additionalProperties": false
+}

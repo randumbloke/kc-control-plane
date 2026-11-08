@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/published_product.schema.json",
+  "title": "hub products/<env>/<domain>/<id>.json (design \u00a73.2.1)",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+    },
+    "product_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "maxLength": 63
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "dataplex_entry": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "steward_group": {
+      "type": "string",
+      "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+    },
+    "owners_group": {
+      "type": "string",
+      "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+    },
+    "aggregate_dq_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "lifecycle": {
+      "enum": [
+        "draft",
+        "published",
+        "deprecated",
+        "retired"
+      ]
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "table_resource": {
+            "type": "string",
+            "pattern": "^//bigquery\\.googleapis\\.com/projects/"
+          },
+          "form": {
+            "enum": [
+              "pipeline_table",
+              "materialized_view",
+              "authorized_view"
+            ]
+          }
+        },
+        "required": [
+          "table_resource",
+          "form"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "refresh_cadence": {
+      "type": "object",
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "refresh_time": {
+          "type": "string"
+        },
+        "threshold_minutes": {
+          "type": "integer"
+        },
+        "cron_schedule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "frequency",
+        "threshold_minutes"
+      ],
+      "additionalProperties": false
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "commit": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "env",
+    "domain",
+    "product_id",
+    "product_name",
+    "steward_group",
+    "owners_group",
+    "aggregate_dq_threshold",
+    "lifecycle",
+    "assets",
+    "refresh_cadence"
+  ],
+  "additionalProperties": false
+}

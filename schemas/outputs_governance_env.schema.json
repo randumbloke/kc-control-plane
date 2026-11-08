@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/outputs_governance_env.schema.json",
+  "title": "outputs/cdmc-governance/<env>/outputs.json",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "domains": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "policy_member": {
+            "type": "string"
+          },
+          "subdomains": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "policy_member": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "policy_member"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "name",
+          "policy_member",
+          "subdomains"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "hub_datasets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "dq_results": {
+            "type": "string"
+          },
+          "cdmc_findings": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dq_results"
+        ],
+        "additionalProperties": true
+      },
+      "description": "region -> dataset IDs"
+    },
+    "cdmc_report_dataset": {
+      "type": "string"
+    },
+    "discovery_configs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "service_urls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "env",
+    "domains",
+    "hub_datasets",
+    "cdmc_report_dataset",
+    "discovery_configs",
+    "service_urls"
+  ],
+  "additionalProperties": false
+}

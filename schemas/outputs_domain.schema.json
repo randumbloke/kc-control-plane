@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/outputs_domain.schema.json",
+  "title": "outputs/dda-<business>/<env>/outputs.json",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+    },
+    "products": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+        "maxLength": 63
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "projects/<p>/locations/<l>/dataProducts/<id>"
+          },
+          "project_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+          },
+          "location": {
+            "type": "string"
+          },
+          "dataplex_entry": {
+            "type": "string",
+            "description": "VERIFY IN BUILD (VA-56)"
+          }
+        },
+        "required": [
+          "name",
+          "project_id",
+          "location",
+          "dataplex_entry"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "env",
+    "domain",
+    "products"
+  ],
+  "additionalProperties": false
+}

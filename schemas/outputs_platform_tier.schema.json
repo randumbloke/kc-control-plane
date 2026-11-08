@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/outputs_platform_tier.schema.json",
+  "title": "outputs/dda-platform/tiers/<tier>/outputs.json",
+  "type": "object",
+  "properties": {
+    "tier": {
+      "enum": [
+        "nonprod",
+        "prod"
+      ]
+    },
+    "hub_project_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+    },
+    "hub_project_number": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "service_agents": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+      }
+    }
+  },
+  "required": [
+    "tier",
+    "hub_project_id",
+    "hub_project_number",
+    "service_agents"
+  ],
+  "additionalProperties": false
+}

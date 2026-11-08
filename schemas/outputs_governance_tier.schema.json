@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/outputs_governance_tier.schema.json",
+  "title": "outputs/cdmc-governance/tiers/<tier>/outputs.json",
+  "type": "object",
+  "properties": {
+    "tier": {
+      "enum": [
+        "nonprod",
+        "prod"
+      ]
+    },
+    "hub_state_bucket": {
+      "type": "string"
+    },
+    "aspect_types": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "short name -> projects/<hub>/locations/<loc>/aspectTypes/<id>"
+    },
+    "entry_types": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "inspection_templates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "region -> template name"
+    }
+  },
+  "required": [
+    "tier",
+    "hub_state_bucket",
+    "aspect_types",
+    "entry_types",
+    "inspection_templates"
+  ],
+  "additionalProperties": false
+}

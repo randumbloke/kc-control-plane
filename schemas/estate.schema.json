@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/estate.schema.json",
+  "title": "bootstrap/estate.json (design \u00a76.13.3, \u00a76.13.5)",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "customer_id": {
+      "type": "string"
+    },
+    "billing_account": {
+      "type": "string",
+      "pattern": "^[0-9A-F]{6}-[0-9A-F]{6}-[0-9A-F]{6}$"
+    },
+    "prefix": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]{1,9}$"
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "dev",
+          "test",
+          "uat",
+          "prod"
+        ]
+      },
+      "minItems": 1
+    },
+    "tiers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "nonprod",
+          "prod"
+        ]
+      },
+      "minItems": 1
+    },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "group_domain": {
+      "type": "string"
+    },
+    "hub_project_ids": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+      }
+    },
+    "cicd_project_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "core_data_project_ids": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+      }
+    },
+    "domain_analytics_project_ids": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{4,28}[a-z0-9]$"
+        }
+      }
+    },
+    "create_projects": {
+      "type": "boolean"
+    },
+    "manage_project_services": {
+      "type": "boolean"
+    },
+    "manage_service_identities": {
+      "type": "boolean"
+    },
+    "manage_org_policies": {
+      "type": "boolean"
+    },
+    "github_owner_type": {
+      "enum": [
+        "organization",
+        "user"
+      ]
+    },
+    "github_owner": {
+      "type": "string"
+    },
+    "single_deployer": {
+      "type": "boolean"
+    },
+    "tf_state_bucket": {
+      "type": "string"
+    },
+    "deployer_service_accounts": {
+      "type": "object",
+      "properties": {
+        "apply": {
+          "type": "string",
+          "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+        },
+        "plan": {
+          "type": "string",
+          "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+        }
+      },
+      "required": [
+        "apply",
+        "plan"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "organization_id",
+    "customer_id",
+    "billing_account",
+    "prefix",
+    "environments",
+    "tiers",
+    "regions",
+    "group_domain",
+    "hub_project_ids",
+    "cicd_project_id",
+    "core_data_project_ids",
+    "domain_analytics_project_ids",
+    "create_projects",
+    "manage_project_services",
+    "manage_service_identities",
+    "manage_org_policies",
+    "github_owner_type",
+    "github_owner",
+    "single_deployer",
+    "tf_state_bucket",
+    "deployer_service_accounts"
+  ],
+  "additionalProperties": false
+}

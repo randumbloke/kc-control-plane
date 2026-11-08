@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/bindings.schema.json",
+  "title": "hub bindings/<env>/<domain>/bindings.json (design \u00a72.3.2)",
+  "type": "object",
+  "properties": {
+    "env": {
+      "enum": [
+        "dev",
+        "test",
+        "uat",
+        "prod"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*-(dev|test|uat|prod)$"
+    },
+    "bindings": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(ds|dp)-[a-z0-9-]+$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "domain_name": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string",
+            "pattern": "^//"
+          }
+        },
+        "required": [
+          "domain_name",
+          "resource"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "env",
+    "domain",
+    "bindings"
+  ],
+  "additionalProperties": false
+}

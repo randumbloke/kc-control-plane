@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/randumbloke/kc-control-plane/schemas/product.schema.json",
+  "title": "Data product definition products/<id>.yaml (design \u00a73.2)",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "maxLength": 63
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "enum": [
+        "draft",
+        "published",
+        "deprecated",
+        "retired"
+      ]
+    },
+    "owners_group": {
+      "type": "string",
+      "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+    },
+    "steward_group": {
+      "type": "string",
+      "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+    },
+    "approvers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9._{}+-]+@[a-z0-9.-]+\\.[a-z]{2,}$"
+      },
+      "maxItems": 10
+    },
+    "access_groups": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "display_name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "contract": {
+      "type": "object",
+      "properties": {
+        "refresh_cadence": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "enum": [
+                "Hourly",
+                "Daily",
+                "Weekly",
+                "Monthly",
+                "Irregular"
+              ]
+            },
+            "refresh_time": {
+              "type": "string",
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "threshold_minutes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "cron_schedule": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "frequency",
+            "threshold_minutes"
+          ],
+          "additionalProperties": false
+        },
+        "aggregate_dq_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "refresh_cadence",
+        "aggregate_dq_threshold"
+      ],
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "table": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*_analytics\\.[a-z][a-z0-9_]*$"
+          },
+          "form": {
+            "enum": [
+              "pipeline_table",
+              "materialized_view",
+              "authorized_view"
+            ]
+          },
+          "access": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^roles/[A-Za-z.]+$"
+            }
+          }
+        },
+        "required": [
+          "table",
+          "form",
+          "access"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "id",
+    "display_name",
+    "lifecycle",
+    "owners_group",
+    "steward_group",
+    "access_groups",
+    "contract",
+    "assets"
+  ],
+  "additionalProperties": false
+}

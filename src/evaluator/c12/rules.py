@@ -12,7 +12,9 @@ Status, in order (ref arch §9.5):
 
 Freshness: a table is LATE when its BigQuery last-modified time is before the latest
 scheduled refresh that is more than `thresholdInMinutes` overdue. The product is LATE if any
-table is late. No refresh-cadence: freshness is absent.
+table is late. Daily and Hourly use `refreshTime` as the schedule; Weekly and Monthly (no day in
+the aspect) use the period plus tolerance since the last modification; Irregular uses
+`cronSchedule`. No refresh-cadence: freshness is absent.
 """
 
 from __future__ import annotations

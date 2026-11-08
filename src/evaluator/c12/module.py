@@ -13,6 +13,7 @@ from cdmc_common.findings import Finding, iso, make_finding, map_status
 from cdmc_common.names import TableRef
 from cdmc_common.products import PublishedProduct
 from cdmc_common.scans import ScanInfo
+from cdmc_common.sensitivity import product_is_sensitive, table_is_sensitive
 from evaluator.c12 import rules
 from evaluator.deps import Deps
 from evaluator.route import product_route
@@ -110,7 +111,7 @@ class C12Module:
         """Phase 1 sensitivity test (P5-8c without classifier): the dataset label
         `cdmc-sensitivity=sensitive`. Column levels join when the classifier is on (phase 2)."""
         ds = self.dataset(ref)
-        return bool(ds and ds.sensitive)
+        return table_is_sensitive(ds.labels if ds else None)
 
     # ---- coverage ---------------------------------------------------------------------
     def coverage(
@@ -148,7 +149,7 @@ class C12Module:
     def product_tables(self, product: PublishedProduct) -> list[tuple[TableRef, bool]]:
         """Asset tables with their sensitivity. A view asset is measured on its base tables
         (design §3.4), taken from one hop of run-time lineage. VERIFY IN BUILD (VA-47)."""
-        product_sensitive = any(self.table_is_sensitive(t) for t in product.tables)
+        product_sensitive = product_is_sensitive(self.table_is_sensitive(t) for t in product.tables)
         out: dict[TableRef, bool] = {}
         for asset in product.data["assets"].values():
             ref = TableRef.parse(asset["table_resource"])

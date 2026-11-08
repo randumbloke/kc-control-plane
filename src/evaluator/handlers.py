@@ -71,7 +71,14 @@ class Evaluator:
         if self.c14 and self.c14.evaluate(ref, trigger, trigger_id) is not None:
             r.actions.append(f"c14:{ref.dotted}")
             r.findings += 1
-        if self.c12 and self.c12.table_is_sensitive(ref):
+        info = self.d.bigquery.get_table(ref) if self.c12 else None
+        # Only BigQuery tables can be scanned; views are measured on their base tables (§3.4).
+        if (
+            self.c12
+            and info is not None
+            and info.table_type == "TABLE"
+            and (self.c12.table_is_sensitive(ref))
+        ):
             self.c12.coverage(ref, trigger, trigger_id, domain)
             r.actions.append(f"c12.coverage:{ref.dotted}")
             r.findings += 1

@@ -64,3 +64,12 @@ def test_non_sensitive_table_is_out_of_coverage_scope():
     assert coverage_of(deps, ref) == []
     # C14 still evaluates every table, sensitive or not.
     assert len(deps.publisher.by_check("C14.lineage")) == 1
+
+
+def test_views_are_not_scanned_directly():
+    from cdmc_common.bigquery import TableInfo
+
+    deps, ref = setup()
+    info = deps.bigquery.tables[ref]
+    deps.bigquery.tables[ref] = TableInfo(ref, info.created, info.last_modified, "VIEW")
+    assert coverage_of(deps, ref) == []

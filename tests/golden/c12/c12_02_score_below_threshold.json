@@ -1,0 +1,135 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-15",
+  "description": "Pooled score 90 below threshold 95",
+  "cadence": {
+    "frequency": "Daily",
+    "refreshTime": "06:00",
+    "thresholdInMinutes": 120
+  },
+  "contract": {
+    "aggregate_dq_threshold": 95.0
+  },
+  "tables": [
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "sensitive": true,
+      "modified_hours_ago": 2,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            true,
+            false
+          ],
+          [
+            "r02",
+            true,
+            false
+          ],
+          [
+            "r03",
+            true,
+            false
+          ],
+          [
+            "r04",
+            true,
+            false
+          ],
+          [
+            "r05",
+            true,
+            false
+          ],
+          [
+            "r06",
+            true,
+            false
+          ],
+          [
+            "r07",
+            true,
+            false
+          ],
+          [
+            "r08",
+            true,
+            false
+          ],
+          [
+            "r09",
+            true,
+            false
+          ],
+          [
+            "r10",
+            true,
+            false
+          ],
+          [
+            "r11",
+            true,
+            false
+          ],
+          [
+            "r12",
+            true,
+            false
+          ],
+          [
+            "r13",
+            true,
+            false
+          ],
+          [
+            "r14",
+            true,
+            false
+          ],
+          [
+            "r15",
+            true,
+            false
+          ],
+          [
+            "r16",
+            true,
+            false
+          ],
+          [
+            "r17",
+            true,
+            false
+          ],
+          [
+            "r18",
+            false,
+            false
+          ],
+          [
+            "r19",
+            false,
+            false
+          ]
+        ]
+      }
+    }
+  ],
+  "expected": {
+    "status": "NON_COMPLIANT",
+    "score": 90.0,
+    "freshness": "ON_TIME"
+  }
+}

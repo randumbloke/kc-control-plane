@@ -1,0 +1,109 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "description": "Score pools rules across tables: 10/12 = 83.33 (a mean of table scores would be 70)",
+  "cadence": {
+    "frequency": "Daily",
+    "refreshTime": "06:00",
+    "thresholdInMinutes": 120
+  },
+  "contract": {
+    "aggregate_dq_threshold": 80.0
+  },
+  "tables": [
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "sensitive": true,
+      "modified_hours_ago": 2,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            true,
+            false
+          ],
+          [
+            "r02",
+            true,
+            false
+          ],
+          [
+            "r03",
+            true,
+            false
+          ],
+          [
+            "r04",
+            true,
+            false
+          ],
+          [
+            "r05",
+            true,
+            false
+          ],
+          [
+            "r06",
+            true,
+            false
+          ],
+          [
+            "r07",
+            true,
+            false
+          ],
+          [
+            "r08",
+            true,
+            false
+          ],
+          [
+            "r09",
+            false,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_segments",
+      "sensitive": true,
+      "modified_hours_ago": 2,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            false,
+            false
+          ]
+        ]
+      }
+    }
+  ],
+  "expected": {
+    "status": "COMPLIANT",
+    "score": 83.33,
+    "freshness": "ON_TIME"
+  }
+}

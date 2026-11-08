@@ -1,0 +1,31 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-15",
+  "description": "Sensitive table scanned but no result yet: NOT_EVALUATED, no score",
+  "cadence": {
+    "frequency": "Daily",
+    "refreshTime": "06:00",
+    "thresholdInMinutes": 120
+  },
+  "contract": {
+    "aggregate_dq_threshold": 95.0
+  },
+  "tables": [
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "sensitive": true,
+      "modified_hours_ago": 2,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": null
+    }
+  ],
+  "expected": {
+    "status": "NOT_EVALUATED",
+    "score": null,
+    "freshness": "ON_TIME"
+  }
+}

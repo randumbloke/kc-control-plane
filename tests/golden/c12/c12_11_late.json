@@ -1,0 +1,125 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-16",
+  "description": "One of two tables missed today's 06:00 refresh beyond 120 minutes: LATE and NON_COMPLIANT",
+  "cadence": {
+    "frequency": "Daily",
+    "refreshTime": "06:00",
+    "thresholdInMinutes": 120
+  },
+  "contract": {
+    "aggregate_dq_threshold": 95.0
+  },
+  "tables": [
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "sensitive": true,
+      "modified_hours_ago": 2,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            true,
+            false
+          ],
+          [
+            "r02",
+            true,
+            false
+          ],
+          [
+            "r03",
+            true,
+            false
+          ],
+          [
+            "r04",
+            true,
+            false
+          ],
+          [
+            "r05",
+            true,
+            false
+          ],
+          [
+            "r06",
+            true,
+            false
+          ],
+          [
+            "r07",
+            true,
+            false
+          ],
+          [
+            "r08",
+            true,
+            false
+          ],
+          [
+            "r09",
+            true,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_segments",
+      "sensitive": true,
+      "modified_hours_ago": 30,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            true,
+            false
+          ],
+          [
+            "r02",
+            true,
+            false
+          ],
+          [
+            "r03",
+            true,
+            false
+          ],
+          [
+            "r04",
+            true,
+            false
+          ]
+        ]
+      }
+    }
+  ],
+  "expected": {
+    "status": "NON_COMPLIANT",
+    "score": 100.0,
+    "freshness": "LATE"
+  }
+}

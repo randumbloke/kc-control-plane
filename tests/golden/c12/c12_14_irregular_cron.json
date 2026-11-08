@@ -1,0 +1,54 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "description": "Irregular cadence with cronSchedule (Mondays 06:00 local); table last modified Sunday: LATE",
+  "cadence": {
+    "frequency": "Irregular",
+    "thresholdInMinutes": 60,
+    "cronSchedule": "0 6 * * 1"
+  },
+  "contract": {
+    "aggregate_dq_threshold": 95.0
+  },
+  "tables": [
+    {
+      "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "sensitive": true,
+      "modified_hours_ago": 30,
+      "scan": {
+        "exists": true,
+        "publishing": true,
+        "export": true
+      },
+      "job": {
+        "end_hours_ago": 3,
+        "rules": [
+          [
+            "r00",
+            true,
+            false
+          ],
+          [
+            "r01",
+            true,
+            false
+          ],
+          [
+            "r02",
+            true,
+            false
+          ],
+          [
+            "r03",
+            true,
+            false
+          ]
+        ]
+      }
+    }
+  ],
+  "expected": {
+    "status": "NON_COMPLIANT",
+    "score": 100.0,
+    "freshness": "LATE"
+  }
+}

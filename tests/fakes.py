@@ -21,8 +21,13 @@ class FakeCatalog:
     def __init__(self, entries: dict[str, dict] | None = None):
         self.entries = entries or {}
         self.writes: list[tuple[str, str, dict]] = []
+        self.missing: set[str] = set()  # BigQuery entries discovery has not created
 
     def lookup_entry(self, entry_name: str) -> dict | None:
+        if entry_name in self.missing:
+            return None
+        if "/entryGroups/@bigquery/" in entry_name and entry_name not in self.entries:
+            return {"name": entry_name, "aspects": {}}
         e = self.entries.get(entry_name)
         return copy.deepcopy(e) if e is not None else None
 

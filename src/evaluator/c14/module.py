@@ -63,6 +63,26 @@ class C14Module:
         if info is None:
             log.info("table %s no longer exists; skipped", ref.dotted)
             return None
+        entry_name = ref.entry_name(s.region)
+        if self.d.catalog.lookup_entry(entry_name) is None:
+            # No catalogue entry yet (discovery has not run): nothing to attach evidence to.
+            finding = make_finding(
+                env=s.env,
+                control="C14",
+                check="C14.lineage",
+                asset=ref.resource,
+                asset_type="TABLE",
+                status="NOT_EVALUATED",
+                evaluator_version=VERSION,
+                trigger=trigger,
+                trigger_id=trigger_id,
+                source_ref=entry_name,
+                now=now,
+                domain=self.domain_of_table(ref),
+                detail={"reason": "table has no catalogue entry"},
+            )
+            self.d.publisher.publish(finding)
+            return finding
         links = self.d.lineage.search_upstream(ref.fqn, s.lineage_max_hops + 1)
         res = rules.resolve(
             ref.fqn,
@@ -90,7 +110,7 @@ class C14Module:
         data["evaluation"] = aspects.evaluation_record(VERSION, iso(now), source_ref)
         data["schema_version"] = aspects.SCHEMA_VERSION
         aspects.validate(ASPECT, data)
-        self.d.catalog.write_aspect(ref.entry_name(s.region), s.aspect_key(ASPECT), data)
+        self.d.catalog.write_aspect(entry_name, s.aspect_key(ASPECT), data)
 
         products = self.d.registry.products_of_table(ref)
         finding = make_finding(
@@ -118,7 +138,7 @@ class C14Module:
                 "truncated_paths": res.truncated_paths,
                 "cycles": res.cycles,
             },
-            route=product_route(products[0].data) if products else None,
+            route=product_route(products[0].data) if products else self.d.domain_route(domain),
         )
         self.d.publisher.publish(finding)
         return finding

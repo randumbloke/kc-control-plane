@@ -10,13 +10,14 @@ from cdmc_common.bigquery import BigQueryClient, RestBigQueryClient
 from cdmc_common.catalog import CatalogClient, RestCatalogClient
 from cdmc_common.config import Settings
 from cdmc_common.domains import DomainsAdapter, RestDomainsAdapter, resource_domain_index
-from cdmc_common.findings import FindingsPublisher, PubSubFindingsPublisher, utc_now
+from cdmc_common.findings import FindingsPublisher, PubSubFindingsPublisher, Route, utc_now
 from cdmc_common.lineage import LineageClient, RestLineageClient
 from cdmc_common.products import ProductRegistry
 from cdmc_common.scans import RestScanClient, ScanClient
 from cdmc_common.storage import GcsStateStore, StateStore
 from cdmc_common.tasks import CloudTasksRollupQueue, RollupQueue
 from cdmc_common.transport import Transport
+from evaluator.route import domain_route
 
 
 @dataclass
@@ -33,6 +34,7 @@ class Deps:
     clock: Callable[[], datetime] = utc_now
     _domain_index: dict[str, str] | None = field(default=None, repr=False)
     _registry: ProductRegistry | None = field(default=None, repr=False)
+    _domains_by_id: dict[str, dict] | None = field(default=None, repr=False)
 
     @property
     def domain_index(self) -> dict[str, str]:
@@ -40,6 +42,16 @@ class Deps:
         if self._domain_index is None:
             self._domain_index = resource_domain_index(self.domains)
         return self._domain_index
+
+    def domain_route(self, domain_id: str | None) -> Route:
+        """Route for a table outside any product: the domain's contacts (C2 is later)."""
+        if not domain_id:
+            return Route()
+        if self._domains_by_id is None:
+            self._domains_by_id = {
+                d["name"].rsplit("/", 1)[-1]: d for d in self.domains.list_domains()
+            }
+        return domain_route(self._domains_by_id.get(domain_id))
 
     @property
     def registry(self) -> ProductRegistry:

@@ -103,3 +103,31 @@ def test_pending_boundary_is_48_hours():
     fx["table"]["created_hours_ago"] = 47.99
     _, _, f = run_fixture(fx)
     assert f.evaluation.detail["control_status"] == "PENDING"
+
+
+def test_table_without_catalogue_entry_is_not_evaluated():
+    fx = json.loads(GOLDEN[0].read_text())
+    now = _now(fx)
+    deps = make_deps(now)
+    ref = deps.bigquery.add_table(fx["table"]["ref"], now - timedelta(hours=72))
+    deps.catalog.missing.add(ref.entry_name("australia-southeast1"))
+    f = C14Module(deps).evaluate(ref, "SWEEP", "s")
+    assert f.evaluation.status == "NOT_EVALUATED" and deps.catalog.writes == []
+
+
+def test_table_finding_routes_to_domain_contacts():
+    fx = json.loads(GOLDEN[3].read_text())
+    domains, bindings = estate.domains_and_bindings()
+    domains[0]["contacts"] = {
+        "identities": [
+            {"role": "owner", "id": "dda-customer-dev-owners@mikegyoung.joonix.net"},
+            {"role": "steward", "id": "dda-customer-dev-stewards@mikegyoung.joonix.net"},
+        ]
+    }
+    now = _now(fx)
+    deps = make_deps(now, domains=FakeDomains(domains, bindings))
+    ref = deps.bigquery.add_table(fx["table"]["ref"], now - timedelta(hours=72))
+    f = C14Module(deps).evaluate(ref, "SWEEP", "s")
+    assert f.domain == "customer-dev"
+    assert f.route.owner == "dda-customer-dev-owners@mikegyoung.joonix.net"
+    assert f.route.steward == "dda-customer-dev-stewards@mikegyoung.joonix.net"

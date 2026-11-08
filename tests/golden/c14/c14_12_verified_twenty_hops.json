@@ -1,0 +1,103 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "\u00a75.4.1",
+  "description": "Leaf exactly 20 hops upstream is resolved (limit is inclusive)",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_curated.contacts",
+    "created_hours_ago": 72
+  },
+  "edges": [
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_01",
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_02",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_01"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_03",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_02"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_04",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_03"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_05",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_04"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_06",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_05"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_07",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_06"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_08",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_07"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_09",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_08"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_10",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_09"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_11",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_10"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_12",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_11"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_13",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_12"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_14",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_13"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_15",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_14"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_16",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_15"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_17",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_16"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_18",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_17"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_19",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_18"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_20",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_19"
+    ]
+  ],
+  "manifests": {},
+  "expected": {
+    "control_status": "VERIFIED",
+    "status": "PASS",
+    "rule": 4,
+    "run_time_ultimate_source": [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.hop_20"
+    ],
+    "design_time_ultimate_source": null,
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

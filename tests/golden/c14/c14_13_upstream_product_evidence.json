@@ -1,0 +1,99 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-23",
+  "description": "accounts_curated table built from Customer Profile records the upstream product. Strict \u00a75.4.1 makes it MISMATCH because the customer landing path is a run-time ultimate source the accounts manifest cannot declare (open design question DQ-1, README)",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.accounts_curated.customer_accounts",
+    "created_hours_ago": 72
+  },
+  "edges": [
+    [
+      "bigquery:kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "bigquery:kcdda-core-dwh-dev.accounts_curated.customer_accounts"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts",
+      "bigquery:kcdda-customer-analytics-dev.customer_analytics.customer_profile"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts",
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts"
+    ],
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.accounts_staging.accounts",
+      "bigquery:kcdda-core-dwh-dev.accounts_curated.customer_accounts"
+    ],
+    [
+      "gcs:kcdda-core-dwh-dev-accounts-landing.accounts/2026-11-08/accounts.csv",
+      "bigquery:kcdda-core-dwh-dev.accounts_staging.accounts"
+    ]
+  ],
+  "manifests": {
+    "accounts-dev": {
+      "version": 1,
+      "domain": "accounts-dev",
+      "generated_by": "hand-written (P6-39)",
+      "targets": {
+        "kcdda-core-dwh-dev.accounts_curated.customer_accounts": {
+          "sources": [
+            "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+            "kcdda-core-dwh-dev.accounts_staging.accounts"
+          ]
+        },
+        "kcdda-core-dwh-dev.accounts_staging.accounts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-accounts-landing/accounts/"
+          ]
+        }
+      }
+    },
+    "customer-dev": {
+      "version": 1,
+      "domain": "customer-dev",
+      "generated_by": "hand-written (P6-39)",
+      "targets": {
+        "kcdda-customer-analytics-dev.customer_analytics.customer_profile": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_curated.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_curated.contacts": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_raw.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_raw.contacts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-customer-landing/contacts/"
+          ]
+        }
+      }
+    }
+  },
+  "products": true,
+  "expected": {
+    "control_status": "MISMATCH",
+    "status": "FAIL",
+    "rule": 3,
+    "run_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-accounts-landing.accounts/2026-11-08/accounts.csv",
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
+    ],
+    "design_time_ultimate_source": [
+      "bigquery:kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+      "gcs:kcdda-core-dwh-dev-accounts-landing.accounts/"
+    ],
+    "upstream_data_products": [
+      "projects/kcdda-customer-analytics-dev/locations/australia-southeast1/dataProducts/customer-profile"
+    ],
+    "undeclared_sources": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
+    ]
+  }
+}

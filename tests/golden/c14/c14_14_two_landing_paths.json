@@ -1,0 +1,49 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-21",
+  "description": "Table built from two landing paths records both as ultimate sources",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_raw.contacts",
+    "created_hours_ago": 50
+  },
+  "edges": [
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/a.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts"
+    ],
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.prefs/2026-11-08/b.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts"
+    ]
+  ],
+  "manifests": {
+    "customer-dev": {
+      "version": 1,
+      "domain": "customer-dev",
+      "targets": {
+        "kcdda-core-dwh-dev.customer_raw.contacts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-customer-landing/contacts/",
+            "gs://kcdda-core-dwh-dev-customer-landing/prefs/"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "control_status": "VERIFIED",
+    "status": "PASS",
+    "rule": 4,
+    "run_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/a.csv",
+      "gcs:kcdda-core-dwh-dev-customer-landing.prefs/2026-11-08/b.csv"
+    ],
+    "design_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/",
+      "gcs:kcdda-core-dwh-dev-customer-landing.prefs/"
+    ],
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

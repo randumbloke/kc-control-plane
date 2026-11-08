@@ -1,0 +1,46 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-21",
+  "description": "Table loaded directly from Cloud Storage, no manifest entry: verified on run-time evidence alone",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_raw.events",
+    "created_hours_ago": 3
+  },
+  "edges": [
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.events/2026-11-08/events.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.events"
+    ]
+  ],
+  "manifests": {
+    "customer-dev": {
+      "version": 1,
+      "domain": "customer-dev",
+      "generated_by": "hand-written (P6-39)",
+      "targets": {
+        "kcdda-core-dwh-dev.customer_curated.contacts": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_raw.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_raw.contacts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-customer-landing/contacts/"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "control_status": "VERIFIED",
+    "status": "PASS",
+    "rule": 4,
+    "run_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.events/2026-11-08/events.csv"
+    ],
+    "design_time_ultimate_source": null,
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

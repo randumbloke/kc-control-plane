@@ -1,0 +1,20 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-19",
+  "description": "Sensitive table 48 h or older without lineage",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_curated.contacts",
+    "created_hours_ago": 72
+  },
+  "edges": [],
+  "manifests": {},
+  "expected": {
+    "control_status": "INSUFFICIENT_EVIDENCE",
+    "status": "FAIL",
+    "rule": 2,
+    "run_time_ultimate_source": [],
+    "design_time_ultimate_source": null,
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

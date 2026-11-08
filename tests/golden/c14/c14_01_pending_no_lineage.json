@@ -1,0 +1,20 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-18",
+  "description": "New table (<48 h) with no run-time lineage",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_curated.contacts",
+    "created_hours_ago": 10
+  },
+  "edges": [],
+  "manifests": {},
+  "expected": {
+    "control_status": "PENDING",
+    "status": "PENDING",
+    "rule": 1,
+    "run_time_ultimate_source": [],
+    "design_time_ultimate_source": null,
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

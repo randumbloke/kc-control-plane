@@ -1,0 +1,59 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "AT-20",
+  "description": "A run-time ultimate source (legacy_contacts) is not in the declared manifest set",
+  "table": {
+    "ref": "kcdda-core-dwh-dev.customer_curated.contacts",
+    "created_hours_ago": 72
+  },
+  "edges": [
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts",
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts"
+    ],
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.legacy_contacts",
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts"
+    ]
+  ],
+  "manifests": {
+    "customer-dev": {
+      "version": 1,
+      "domain": "customer-dev",
+      "generated_by": "hand-written (P6-39)",
+      "targets": {
+        "kcdda-core-dwh-dev.customer_curated.contacts": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_raw.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_raw.contacts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-customer-landing/contacts/"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "control_status": "MISMATCH",
+    "status": "FAIL",
+    "rule": 3,
+    "run_time_ultimate_source": [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.legacy_contacts",
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
+    ],
+    "design_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/"
+    ],
+    "upstream_data_products": [],
+    "undeclared_sources": [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.legacy_contacts"
+    ]
+  }
+}

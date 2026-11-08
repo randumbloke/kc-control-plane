@@ -33,21 +33,39 @@ class ManifestIndex:
         return f"gs://{self._bucket}/lineage/{self._env}/{domain}/manifest.json"
 
     def lookup(self, ref: TableRef, domain: str | None) -> tuple[Declared | None, str | None]:
-        """Declared sources of a table and the domain whose manifest declared them.
+        """Design-time ultimate sources of a table and the domain whose manifest declared it.
 
-        The table's own domain manifest is used when the domain is known; otherwise the
-        first manifest (by domain ID) that declares the table.
+        The manifest lists each target's direct sources and landing paths. A declared source
+        that is itself a target of the same manifest is expanded through its own declaration,
+        so the result is the set of design-time origins (leaf tables and landing paths), the
+        same form as the run-time ultimate sources it is compared with (design §5.4.1).
+        The table's own domain manifest is used when the domain is known; otherwise the first
+        manifest (by domain ID) that declares the table.
         """
         manifests = self._load()
         order = [domain] if domain in manifests else sorted(manifests)
         for d in order:
-            target = manifests[d].get("targets", {}).get(ref.dotted)
-            if target is not None:
-                return (
-                    Declared(
-                        tuple(sorted(target.get("sources", []))),
-                        tuple(sorted(target.get("landing_paths", []))),
-                    ),
-                    d,
-                )
+            targets = manifests[d].get("targets", {})
+            if ref.dotted in targets:
+                return expand(targets, ref.dotted), d
         return None, None
+
+
+def expand(targets: dict[str, dict], root: str) -> Declared:
+    leaves: set[str] = set()
+    landing: set[str] = set()
+    seen: set[str] = set()
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node in seen:
+            continue
+        seen.add(node)
+        decl = targets.get(node)
+        if decl is None:
+            leaves.add(node)
+            continue
+        landing.update(decl.get("landing_paths", []))
+        stack.extend(decl.get("sources", []))
+    leaves.discard(root)
+    return Declared(tuple(sorted(leaves)), tuple(sorted(landing)))

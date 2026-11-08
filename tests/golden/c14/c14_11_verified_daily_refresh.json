@@ -1,0 +1,61 @@
+{
+  "now": "2026-11-09T00:00:00Z",
+  "at": "\u00a75.4.1",
+  "description": "Table rebuilt every day (CREATE OR REPLACE resets creation to 3 h ago) reaches VERIFIED on its existing lineage and does not stay PENDING",
+  "table": {
+    "ref": "kcdda-customer-analytics-dev.customer_analytics.customer_profile",
+    "created_hours_ago": 3
+  },
+  "edges": [
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts",
+      "bigquery:kcdda-customer-analytics-dev.customer_analytics.customer_profile"
+    ],
+    [
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts",
+      "bigquery:kcdda-core-dwh-dev.customer_curated.contacts"
+    ],
+    [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv",
+      "bigquery:kcdda-core-dwh-dev.customer_raw.contacts"
+    ]
+  ],
+  "manifests": {
+    "customer-dev": {
+      "version": 1,
+      "domain": "customer-dev",
+      "generated_by": "hand-written (P6-39)",
+      "targets": {
+        "kcdda-customer-analytics-dev.customer_analytics.customer_profile": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_curated.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_curated.contacts": {
+          "sources": [
+            "kcdda-core-dwh-dev.customer_raw.contacts"
+          ]
+        },
+        "kcdda-core-dwh-dev.customer_raw.contacts": {
+          "sources": [],
+          "landing_paths": [
+            "gs://kcdda-core-dwh-dev-customer-landing/contacts/"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "control_status": "VERIFIED",
+    "status": "PASS",
+    "rule": 4,
+    "run_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
+    ],
+    "design_time_ultimate_source": [
+      "gcs:kcdda-core-dwh-dev-customer-landing.contacts/"
+    ],
+    "upstream_data_products": [],
+    "undeclared_sources": []
+  }
+}

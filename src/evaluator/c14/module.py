@@ -14,7 +14,7 @@ from evaluator.deps import Deps
 from evaluator.manifests import ManifestIndex
 from evaluator.route import product_route
 
-VERSION = "c14-lineage@1.0.0"
+VERSION = "c14-lineage@1.1.0"  # 1.1.0: OD-6 coverage
 ASPECT = "cdmc-lineage-evidence"
 log = logging.getLogger(__name__)
 
@@ -83,6 +83,19 @@ class C14Module:
             )
             self.d.publisher.publish(finding)
             return finding
+        domain = self.domain_of_table(ref)
+        declared, manifest_domain = self.manifests.lookup(ref, domain)
+
+        def is_shield(fqn: str) -> bool:
+            # OD-6: a declared node of another domain that is a provisioning point covers
+            # the run-time sources reached only through it.
+            if declared is None or not declared.declares(fqn):
+                return False
+            other = self._domain_of_fqn(fqn)
+            if other is None or domain is None or other == domain:
+                return False
+            return self._provisioning_product(fqn) is not None
+
         links = self.d.lineage.search_upstream(ref.fqn, s.lineage_max_hops + 1)
         res = rules.resolve(
             ref.fqn,
@@ -90,9 +103,8 @@ class C14Module:
             max_hops=s.lineage_max_hops,
             domain_of=self._domain_of_fqn,
             provisioning_product=self._provisioning_product,
+            is_shield=is_shield,
         )
-        domain = self.domain_of_table(ref)
-        declared, manifest_domain = self.manifests.lookup(ref, domain)
         outcome = rules.evaluate(
             created=info.created,
             now=now,
@@ -134,6 +146,7 @@ class C14Module:
                 "run_time_ultimate_source": res.sources,
                 "design_time_ultimate_source": declared.fqns() if declared else None,
                 "undeclared_sources": list(outcome.undeclared),
+                "covered_by_provisioning_point": res.shielded,
                 "upstream_data_products": res.upstream_data_products,
                 "truncated_paths": res.truncated_paths,
                 "cycles": res.cycles,

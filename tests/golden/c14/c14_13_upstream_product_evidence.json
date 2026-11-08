@@ -1,7 +1,7 @@
 {
   "now": "2026-11-09T00:00:00Z",
   "at": "AT-23",
-  "description": "accounts_curated table built from Customer Profile records the upstream product. Strict \u00a75.4.1 makes it MISMATCH because the customer landing path is a run-time ultimate source the accounts manifest cannot declare (open design question DQ-1, README)",
+  "description": "accounts_curated table built from Customer Profile records the upstream product. The customer landing path is reached only through the declared cross-domain provisioning point customer_profile, so it is covered (OD-6) and the table is VERIFIED",
   "table": {
     "ref": "kcdda-core-dwh-dev.accounts_curated.customer_accounts",
     "created_hours_ago": 72
@@ -78,9 +78,9 @@
   },
   "products": true,
   "expected": {
-    "control_status": "MISMATCH",
-    "status": "FAIL",
-    "rule": 3,
+    "control_status": "VERIFIED",
+    "status": "PASS",
+    "rule": 4,
     "run_time_ultimate_source": [
       "gcs:kcdda-core-dwh-dev-accounts-landing.accounts/2026-11-08/accounts.csv",
       "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
@@ -92,7 +92,8 @@
     "upstream_data_products": [
       "projects/kcdda-customer-analytics-dev/locations/australia-southeast1/dataProducts/customer-profile"
     ],
-    "undeclared_sources": [
+    "undeclared_sources": [],
+    "covered_by_provisioning_point": [
       "gcs:kcdda-core-dwh-dev-customer-landing.contacts/2026-11-08/contacts.csv"
     ]
   }

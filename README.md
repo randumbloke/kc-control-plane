@@ -97,10 +97,16 @@ deploys by digest from its `envs/images.json`. This repository holds no Terrafor
 - **Design-time origins.** A manifest declares each target's direct sources; the evaluator expands
   declared sources that are themselves targets of the same manifest, so design-time and run-time
   ultimate sources have the same form.
-- **DQ-1 (cross-domain MISMATCH).** By §5.4.1, a table built from another domain's product has
-  run-time ultimate sources in the other domain (its landing paths), which its own manifest cannot
-  declare, so it is `MISMATCH` (golden fixture `c14_13`). Recommendation for the owner: treat a
-  declared source that is a cross-domain provisioning point as covering the paths through it.
+- **C14 coverage (OD-6, resolves DQ-1).** A run-time ultimate source is covered when it is in the
+  table's declared manifest set, or when every walked upstream path from the table to it passes
+  through a node that is in the declared set, belongs to another domain and is a provisioning
+  point. A consuming domain declares the upstream product's asset, not that domain's landing
+  paths, so a table built from Customer Profile is `VERIFIED` (golden fixture `c14_13`, AT-23). A
+  source also reachable by a path that bypasses the provisioning point is not covered (`c14_16`),
+  and covering one source does not cover another undeclared one (`c14_15`). The evidence still
+  lists every run-time ultimate source; the finding detail lists the covered ones in
+  `covered_by_provisioning_point`. Paths not walked (cut at 20 hops, or beyond the walk's visit
+  cap) cannot bypass the provisioning point.
 - **Provisioning point in phase 1.** `cdmc-provisioning-point` has no writer until C3; when it is
   absent, C14 applies the C3 definition (asset of a published product in an `analytics` dataset)
   to record `upstream_data_products` (AT-23).

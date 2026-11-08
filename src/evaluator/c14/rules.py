@@ -3,13 +3,18 @@
 Rules, first match wins, no pass-by-default branch:
   1 PENDING                table < 48 h old and no resolved run-time ultimate source
   2 INSUFFICIENT_EVIDENCE  table >= 48 h old and no resolved run-time ultimate source
-  3 MISMATCH               a run-time ultimate source is not in the declared manifest set
-  4 VERIFIED               >= 1 resolved source, all declared when a manifest entry exists
+  3 MISMATCH               a run-time ultimate source is not covered
+  4 VERIFIED               >= 1 resolved source, all covered when a manifest entry exists
 
 Resolution: follow upstream links from the table, at most `max_hops` hops, stopping at cycles.
 A node with no upstream link is a run-time ultimate source. A path cut by the hop limit, or
 one that only loops back on itself, ends at an intermediate node, which is not a source (this
 is how "lineage that so far reaches only intermediate tables" is decided).
+
+Coverage (owner decision OD-6): a source is covered when it is in the declared manifest set,
+or when every walked path from the table to it passes through a shield node: a node in the
+declared set that belongs to another domain and is a provisioning point. The walk records the
+sources reached on at least one path with no shield node; the others are `shielded`.
 """
 
 from __future__ import annotations
@@ -38,6 +43,8 @@ class Resolution:
     truncated_paths: int = 0
     cycles: int = 0
     intermediate_ends: list[str] = field(default_factory=list)
+    # Sources reached only through a shield node (every walked path passes through one).
+    shielded: list[str] = field(default_factory=list)
 
 
 def resolve(
@@ -47,7 +54,10 @@ def resolve(
     max_hops: int = 20,
     domain_of: Callable[[str], str | None] = lambda _fqn: None,
     provisioning_product: Callable[[str], str | None] = lambda _fqn: None,
+    is_shield: Callable[[str], bool] = lambda _fqn: False,
 ) -> Resolution:
+    """Walk upstream from `root`. `is_shield(fqn)` marks a declared cross-domain
+    provisioning point (OD-6); it is never asked about `root`."""
     upstream: dict[str, set[str]] = {}
     for link in links:
         # A self-link is kept: it is skipped as a cycle during the walk.
@@ -57,11 +67,25 @@ def resolve(
 
     root_domain = domain_of(root)
     sources: set[str] = set()
+    exposed: set[str] = set()  # reached on at least one path with no shield node
     products: set[str] = set()
     intermediate: set[str] = set()
+    shield_cache: dict[str, bool] = {}
     state = {"truncated": 0, "cycles": 0, "visits": 0}
 
-    def walk(node: str, depth: int, on_path: frozenset[str], crossed: bool, found: bool) -> None:
+    def shield(fqn: str) -> bool:
+        if fqn not in shield_cache:
+            shield_cache[fqn] = bool(is_shield(fqn))
+        return shield_cache[fqn]
+
+    def walk(
+        node: str,
+        depth: int,
+        on_path: frozenset[str],
+        crossed: bool,
+        found: bool,
+        shielded: bool,
+    ) -> None:
         state["visits"] += 1
         if state["visits"] > MAX_PATH_VISITS:
             state["truncated"] += 1
@@ -70,6 +94,8 @@ def resolve(
         ups = sorted(upstream.get(node, ()))
         if node != root and not ups:
             sources.add(node)
+            if not shielded:
+                exposed.add(node)
             return
         if depth >= max_hops:
             state["truncated"] += 1
@@ -91,11 +117,12 @@ def resolve(
                 if product:
                     products.add(product)
                     found_up = True
-            walk(up, depth + 1, on_path | {up}, crossed_up, found_up)
+            shielded_up = shielded or shield(up)
+            walk(up, depth + 1, on_path | {up}, crossed_up, found_up, shielded_up)
         if not progressed:
             intermediate.add(node)
 
-    walk(root, 0, frozenset({root}), False, False)
+    walk(root, 0, frozenset({root}), False, False, False)
     return Resolution(
         has_lineage=True,
         sources=sorted(sources),
@@ -103,6 +130,7 @@ def resolve(
         truncated_paths=state["truncated"],
         cycles=state["cycles"],
         intermediate_ends=sorted(intermediate),
+        shielded=sorted(sources - exposed),
     )
 
 
@@ -152,7 +180,10 @@ def evaluate(
     if not resolution.sources:
         return Outcome(INSUFFICIENT_EVIDENCE, 2, age_hours=age_h)
     if declared is not None:
-        undeclared = tuple(s for s in resolution.sources if not declared.declares(s))
+        shielded = set(resolution.shielded)
+        undeclared = tuple(
+            s for s in resolution.sources if not declared.declares(s) and s not in shielded
+        )
         if undeclared:
             return Outcome(MISMATCH, 3, undeclared, age_h)
     return Outcome(VERIFIED, 4, age_hours=age_h)

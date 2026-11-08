@@ -1,4 +1,4 @@
-"""Golden fixtures for every C14 rule (design §5.4.1, §5.10; AT-18 to AT-21, AT-23)."""
+"""Golden fixtures for every C14 rule (design §5.4.1, §5.10; AT-18 to AT-21, AT-23, OD-6)."""
 
 from __future__ import annotations
 
@@ -55,6 +55,7 @@ def test_c14_golden(path: Path):
     assert d["design_time_ultimate_source"] == exp["design_time_ultimate_source"]
     assert d["upstream_data_products"] == exp["upstream_data_products"]
     assert d["undeclared_sources"] == exp["undeclared_sources"]
+    assert d["covered_by_provisioning_point"] == exp.get("covered_by_provisioning_point", [])
     assert finding.control == "C14" and finding.check == "C14.lineage"
     assert finding.evaluation.evaluator_version == VERSION
     assert finding.narrative is None  # D-01: no narrative in phase 1

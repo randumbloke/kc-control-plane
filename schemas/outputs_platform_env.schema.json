@@ -60,12 +60,6 @@
         "type": "string"
       }
     },
-    "metadata_feeds": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
-    },
     "domain_service_accounts": {
       "type": "object",
       "additionalProperties": {
@@ -94,7 +88,6 @@
     "projects",
     "landing_buckets",
     "topics",
-    "metadata_feeds",
     "domain_service_accounts"
   ],
   "additionalProperties": false

@@ -83,6 +83,12 @@
         "type": "string"
       }
     },
+    "metadata_feeds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "service_urls": {
       "type": "object",
       "additionalProperties": {
@@ -96,6 +102,7 @@
     "hub_datasets",
     "cdmc_report_dataset",
     "discovery_configs",
+    "metadata_feeds",
     "service_urls"
   ],
   "additionalProperties": false
